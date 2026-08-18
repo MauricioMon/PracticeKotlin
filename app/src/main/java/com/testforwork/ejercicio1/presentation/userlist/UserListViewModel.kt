@@ -10,6 +10,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed interface UserListEvent {
+    data object LoadUsers : UserListEvent
+    data object Refresh : UserListEvent
+}
+
 @HiltViewModel
 class UserListViewModel @Inject constructor(
     private val getUsersUseCase: GetUsersUseCase
@@ -19,10 +24,16 @@ class UserListViewModel @Inject constructor(
     val uiState: StateFlow<UserListUiState> = _uiState.asStateFlow()
 
     init {
-        loadUsers()
+        onEvent(UserListEvent.LoadUsers)
     }
 
-    fun loadUsers() {
+    fun onEvent(event: UserListEvent) {
+        when (event) {
+            is UserListEvent.LoadUsers, is UserListEvent.Refresh -> loadUsers()
+        }
+    }
+
+    private fun loadUsers() {
         viewModelScope.launch {
             _uiState.value = UserListUiState.Loading
             val result = getUsersUseCase(count = 20)
