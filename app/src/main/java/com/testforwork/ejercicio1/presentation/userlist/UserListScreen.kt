@@ -1,10 +1,12 @@
 package com.testforwork.ejercicio1.presentation.userlist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,15 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.testforwork.ejercicio1.domain.model.User
-import android.content.Intent
-import android.net.Uri
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserListScreen(
-    viewModel: UserListViewModel = hiltViewModel()
+    viewModel: UserListViewModel = hiltViewModel(),
+    onUserClick: (User) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -76,7 +75,10 @@ fun UserListScreen(
                 is UserListUiState.Success -> {
                     LazyColumn {
                         items(state.users) { user ->
-                            UserRow(user)
+                            UserRow(
+                                user = user,
+                                onClick = { onUserClick(user) }
+                            )
                             Divider()
                         }
                     }
@@ -87,12 +89,14 @@ fun UserListScreen(
 }
 
 @Composable
-private fun UserRow(user: User) {
-    val context = LocalContext.current
-
+private fun UserRow(
+    user: User,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .clickable { onClick() }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -112,20 +116,6 @@ private fun UserRow(user: User) {
                 text = "Lat: ${user.latitude}, Long: ${user.longitude}",
                 style = MaterialTheme.typography.bodySmall
             )
-        }
-        IconButton(onClick = {
-            val uri = Uri.parse("geo:${user.latitude},${user.longitude}?q=${user.latitude},${user.longitude}(${user.fullName})")
-            val mapIntent = Intent(Intent.ACTION_VIEW, uri)
-            mapIntent.setPackage("com.google.android.apps.maps")
-
-            if (mapIntent.resolveActivity(context.packageManager) != null) {
-                    context.startActivity(mapIntent)
-            } else {
-                val browserUri = Uri.parse("https://www.google.com/maps?q=${user.latitude},${user.longitude}")
-                context.startActivity(Intent(Intent.ACTION_VIEW, browserUri))
-            }
-        }) {
-            Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Ver ubicación en el mapa")
         }
     }
 }
