@@ -11,14 +11,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
-import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.rememberCameraPositionState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +29,11 @@ fun UserDetailScreen(
     userName: String,
     onBackClick: () -> Unit
 ) {
-    val context = LocalContext.current
+    val userLocation = remember(latitude, longitude) { LatLng(latitude, longitude) }
+
+    val cameraPositionState: CameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(userLocation, 14f)
+    }
 
     Scaffold(
         topBar = {
@@ -42,28 +47,16 @@ fun UserDetailScreen(
             )
         }
     ) { innerPadding ->
-        AndroidView(
+        GoogleMap(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            factory = { ctx ->
-                Configuration.getInstance().userAgentValue = ctx.packageName
-
-                MapView(ctx).apply {
-                    setTileSource(TileSourceFactory.MAPNIK)
-                    setMultiTouchControls(true)
-
-                    val point = GeoPoint(latitude, longitude)
-                    controller.setZoom(15.0)
-                    controller.setCenter(point)
-
-                    val marker = Marker(this)
-                    marker.position = point
-                    marker.title = userName
-                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                    overlays.add(marker)
-                }
-            }
-        )
+            cameraPositionState = cameraPositionState
+        ) {
+            Marker(
+                state = MarkerState(position = userLocation),
+                title = userName
+            )
+        }
     }
 }

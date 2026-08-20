@@ -75,7 +75,9 @@ dependencies {
     ksp("com.google.dagger:hilt-compiler:2.51.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-    implementation("org.osmdroid:osmdroid-android:6.1.20")
+
+    implementation("com.google.maps.android:maps-compose:4.3.3")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 
 
     implementation("androidx.navigation:navigation-compose:2.8.0")

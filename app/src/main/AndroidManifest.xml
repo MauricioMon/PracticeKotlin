@@ -16,6 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Ejercicio1">
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAJK3Saq0BaJKNHD52OiGRPv3rOMGFtOHQ" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
