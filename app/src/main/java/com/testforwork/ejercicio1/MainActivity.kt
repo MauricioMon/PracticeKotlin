@@ -4,9 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.testforwork.ejercicio1.presentation.navigation.AppNavGraph
-import com.testforwork.ejercicio1.presentation.userlist.UserListScreen
-import com.testforwork.ejercicio1.ui.theme.Ejercicio1Theme
+import com.testforwork.ejercicio1.core.navigation.AppNavGraph
+import com.testforwork.ejercicio1.core.ui.theme.Ejercicio1Theme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
